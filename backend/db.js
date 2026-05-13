@@ -14,3 +14,17 @@ const pool = mysql.createPool({
     connectionLimit: 10,
     queueLimit: 0
 });
+
+// Test connection
+(async () => {
+    try {
+        const connection = await pool.getConnection();
+        console.log('✅ Connected to Aiven MySQL database successfully');
+        connection.release();
+    } catch (error) {
+        console.error('❌ Database connection failed:', error.message);
+        console.error('Check your Render Environment Variables (DB_HOST, DB_USER, etc.)');
+    }
+})();
+
+module.exports = pool;

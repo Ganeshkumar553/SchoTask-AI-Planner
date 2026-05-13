@@ -10,14 +10,38 @@ const aiRoutes = require('./routes/ai');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Update CORS to allow both local and production URLs
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://scho-task-ai-planner.vercel.app",
+  process.env.FRONTEND_URL
+]
+  .filter(Boolean)
+  .map(origin => origin.replace(/\/$/, "")); // Remove trailing slashes
+
+console.log("Allowed Origins:", allowedOrigins);
 
 app.use(cors({
-    origin: "https://scho-task-ai-planner.vercel.app/",
-    credentials: true
+  origin: function (origin, callback) {
+    // If no origin (like mobile apps or curl), allow it
+    if (!origin) return callback(null, true);
+    
+    const normalizedOrigin = origin.replace(/\/$/, "");
+    if (allowedOrigins.includes(normalizedOrigin)) {
+      // Reflect the EXACT origin sent by the browser
+      callback(null, true);
+    } else {
+      console.warn(`CORS blocked for origin: ${origin}`);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  optionsSuccessStatus: 200
 }));
 
 // Middleware
-app.use(cors());
 app.use(bodyParser.json());
 
 // Routes
