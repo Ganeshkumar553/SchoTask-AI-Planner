@@ -10,6 +10,12 @@ const aiRoutes = require('./routes/ai');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+
+app.use(cors({
+    origin: "https://scho-task-ai-planner.vercel.app/",
+    credentials: true
+}));
+
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
